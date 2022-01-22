@@ -1,0 +1,178 @@
+{
+  "api": {
+    "services": [
+      "ReflectionService",
+      "HandlerService",
+      "LoggerService",
+      "StatsService"
+    ],
+    "tag": "QV2RAY_API"
+  },
+  "dns": {
+    "servers": [
+      "1.1.1.1",
+      "8.8.8.8",
+      "8.8.4.4"
+    ]
+  },
+  "inbounds": [
+    {
+      "listen": "127.0.0.1",
+      "port": 15490,
+      "protocol": "dokodemo-door",
+      "settings": {
+        "address": "127.0.0.1"
+      },
+      "sniffing": {
+      },
+      "tag": "QV2RAY_API_INBOUND"
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": 1081,
+      "protocol": "http",
+      "settings": {
+        "allowTransparent": true,
+        "timeout": 300
+      },
+      "sniffing": {
+      },
+      "tag": "http_IN"
+    },
+    {
+      "listen": "127.0.0.1",
+      "port": 1089,
+      "protocol": "socks",
+      "settings": {
+        "auth": "noauth",
+        "ip": "127.0.0.1",
+        "udp": true
+      },
+      "sniffing": {
+      },
+      "tag": "socks_IN"
+    }
+  ],
+  "log": {
+    "loglevel": "warning"
+  },
+  "outbounds": [
+    {
+      "protocol": "vmess",
+      "sendThrough": "0.0.0.0",
+      "settings": {
+        "vnext": [
+          {
+            "address": "ovh.fr.tgproxy.wtf",
+            "port": 8888,
+            "users": [
+              {
+                "id": "e4452470-2ec4-4dbf-9dfd-f28e74ac2554"
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "ws",
+        "security": "tls",
+        "tlsSettings": {
+          "allowInsecure": false,
+          "disableSessionResumption": true,
+          "disableSystemRoot": false,
+          "serverName": ""
+        },
+        "wsSettings": {
+          "headers": {
+            "Host": ""
+          },
+          "path": ""
+        },
+        "xtlsSettings": {
+          "allowInsecure": false,
+          "disableSessionResumption": true,
+          "disableSystemRoot": false
+        }
+      },
+      "tag": "PROXY"
+    },
+    {
+      "protocol": "freedom",
+      "sendThrough": "0.0.0.0",
+      "settings": {
+        "domainStrategy": "AsIs",
+        "redirect": ":0"
+      },
+      "streamSettings": {
+      },
+      "tag": "DIRECT"
+    },
+    {
+      "protocol": "blackhole",
+      "sendThrough": "0.0.0.0",
+      "settings": {
+        "response": {
+          "type": "none"
+        }
+      },
+      "streamSettings": {
+      },
+      "tag": "BLACKHOLE"
+    },
+    {
+      "protocol": "dns",
+      "tag": "dns-out"
+    }
+  ],
+  "policy": {
+    "system": {
+      "statsInboundDownlink": true,
+      "statsInboundUplink": true,
+      "statsOutboundDownlink": true,
+      "statsOutboundUplink": true
+    }
+  },
+  "routing": {
+    "domainStrategy": "AsIs",
+    "rules": [
+      {
+        "inboundTag": [
+          "QV2RAY_API_INBOUND"
+        ],
+        "outboundTag": "QV2RAY_API",
+        "type": "field"
+      },
+      {
+        "inboundTag": [
+          "socks_IN"
+        ],
+        "outboundTag": "dns-out",
+        "port": "53",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "geoip:private"
+        ],
+        "outboundTag": "DIRECT",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "geoip:cn"
+        ],
+        "outboundTag": "DIRECT",
+        "type": "field"
+      },
+      {
+        "domain": [
+          "geosite:cn"
+        ],
+        "outboundTag": "DIRECT",
+        "type": "field"
+      }
+    ]
+  },
+  "stats": {
+  }
+}
