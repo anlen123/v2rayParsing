@@ -1,6 +1,6 @@
 # 使用方法
 
-把v2ray 的订阅连接写入 ding.inf 中
+把v2ray 的订阅连接写入 ding.inf 中, 多个订阅连接,换行即可
 
 ```inf
 xxxxx
