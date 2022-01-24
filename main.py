@@ -70,7 +70,10 @@ if __name__ == '__main__':
     urls =[url for url in urls if url]
     links = []
     for url in urls:
-        links+=(getV2List(url))
+        try:
+            links+=(getV2List(url))
+        except:
+            print(f"{url}: 解析错误")
     for index, value in enumerate(links):
         print(f'{index + 1} : {parse(value)["ps"]}')
     node = int(input("你切换的节点: "))
